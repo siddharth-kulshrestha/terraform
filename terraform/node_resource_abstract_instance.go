@@ -1219,6 +1219,8 @@ func (n *NodeAbstractResourceInstance) readDataSource(ctx EvalContext, configVal
 		Config:       configVal,
 		ProviderMeta: metaConfigVal,
 	})
+	log.Println("Response from ReadDataSource: ")
+	log.Println(resp.State.GoString())
 	diags = diags.Append(resp.Diagnostics.InConfigBody(config.Config, n.Addr.String()))
 	if diags.HasErrors() {
 		return newVal, diags
