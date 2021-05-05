@@ -1205,6 +1205,15 @@ func (n *NodeAbstractResourceInstance) readDataSource(ctx EvalContext, configVal
 	// to actually call the provider to read the data.
 	log.Printf("[TRACE] readDataSource: %s configuration is complete, so reading from provider", n.Addr)
 
+	log.Println("CUSTOM_LOG_SID: READ DATA SOURCE REQUEST params start:::::: ")
+	log.Println("TypeName: ")
+	log.Println(n.Addr.ContainingResource().Resource.Type)
+	log.Println("Config: ")
+	log.Println(configVal.Type().FriendlyName())
+	log.Println(configVal.GoString())
+	log.Println("ProviderMeta: ")
+	log.Println(metaConfigVal.Type().FriendlyName())
+	log.Println(metaConfigVal.GoString())
 	resp := provider.ReadDataSource(providers.ReadDataSourceRequest{
 		TypeName:     n.Addr.ContainingResource().Resource.Type,
 		Config:       configVal,
