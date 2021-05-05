@@ -3,6 +3,7 @@ package providercache
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"path/filepath"
 	"strings"
 
@@ -101,6 +102,8 @@ func (cp *CachedProvider) HashV1() (getproviders.Hash, error) {
 // slashes and backslashes as long as the separators are consistent within a
 // particular path string.
 func (cp *CachedProvider) ExecutableFile() (string, error) {
+	log.Println("CUSTOM_LOG_SID: called ExecutableFile func::cp.PackageDir::")
+	log.Println(cp.PackageDir)
 	infos, err := ioutil.ReadDir(cp.PackageDir)
 	if err != nil {
 		// If the directory itself doesn't exist or isn't readable then we
@@ -132,7 +135,16 @@ func (cp *CachedProvider) ExecutableFile() (string, error) {
 	// name-lexical order) that looks like a plausible provider executable
 	// name. A package with multiple files meeting these criteria is degenerate
 	// but we will tolerate it by ignoring the subsequent entries.
+
+	log.Println("CUSTOM_LOG_SID: called ExecutableFile func::infos::")
+	log.Println(infos)
+	log.Println(cp.Provider.Type)
+	log.Println(cp.Provider.Namespace)
+	log.Println(cp.Provider.Hostname)
+
 	for _, info := range infos {
+		log.Println("CUSTOM_LOG_SID: called ExecutableFile func::info::")
+		log.Println(info.Name())
 		if info.IsDir() {
 			continue // A directory can never be an executable
 		}
@@ -144,6 +156,8 @@ func (cp *CachedProvider) ExecutableFile() (string, error) {
 		if len(remainder) > 0 && (remainder[0] != '_' && remainder[0] != '.') {
 			continue // subsequent characters must be delimited by _ or .
 		}
+		log.Println(cp.PackageDir)
+		log.Println(name)
 		return filepath.ToSlash(filepath.Join(cp.PackageDir, name)), nil
 	}
 

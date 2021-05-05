@@ -90,6 +90,7 @@ var _ backend.Backend = (*Local)(nil)
 
 // New returns a new initialized local backend.
 func New() *Local {
+	log.Println("CUSTOM_LOG_SID: inside backend/local/backend.go::New()")
 	return NewWithBackend(nil)
 }
 
@@ -102,6 +103,8 @@ func NewWithBackend(backend backend.Backend) *Local {
 }
 
 func (b *Local) ConfigSchema() *configschema.Block {
+
+	log.Println("CUSTOM_LOG_SID: inside backend/local/backend.go::ConfigSchema()")
 	if b.Backend != nil {
 		return b.Backend.ConfigSchema()
 	}
@@ -120,6 +123,7 @@ func (b *Local) ConfigSchema() *configschema.Block {
 }
 
 func (b *Local) PrepareConfig(obj cty.Value) (cty.Value, tfdiags.Diagnostics) {
+	log.Println("CUSTOM_LOG_SID: inside backend/local/backend.go::PrepareConfig()")
 	if b.Backend != nil {
 		return b.Backend.PrepareConfig(obj)
 	}
@@ -154,6 +158,7 @@ func (b *Local) PrepareConfig(obj cty.Value) (cty.Value, tfdiags.Diagnostics) {
 }
 
 func (b *Local) Configure(obj cty.Value) tfdiags.Diagnostics {
+	log.Println("CUSTOM_LOG_SID: inside backend/local/backend.go::Configure()")
 	if b.Backend != nil {
 		return b.Backend.Configure(obj)
 	}
@@ -180,6 +185,7 @@ func (b *Local) Configure(obj cty.Value) tfdiags.Diagnostics {
 }
 
 func (b *Local) Workspaces() ([]string, error) {
+	log.Println("CUSTOM_LOG_SID: inside backend/local/backend.go::Workspaces()")
 	// If we have a backend handling state, defer to that.
 	if b.Backend != nil {
 		return b.Backend.Workspaces()
@@ -214,6 +220,8 @@ func (b *Local) Workspaces() ([]string, error) {
 //
 // The "default" workspace cannot be removed.
 func (b *Local) DeleteWorkspace(name string) error {
+
+	log.Println("CUSTOM_LOG_SID: inside backend/local/backend.go::DeleteWorkspace()")
 	// If we have a backend handling state, defer to that.
 	if b.Backend != nil {
 		return b.Backend.DeleteWorkspace(name)
@@ -269,6 +277,7 @@ func (b *Local) StateMgr(name string) (statemgr.Full, error) {
 // the structure with the following rules. If a rule isn't specified and the
 // name conflicts, assume that the field is overwritten if set.
 func (b *Local) Operation(ctx context.Context, op *backend.Operation) (*backend.RunningOperation, error) {
+	log.Println("CUSTOM_LOG_SID: inside backend/local/backend.go::Operation()")
 	if op.View == nil {
 		panic("Operation called with nil View")
 	}

@@ -99,6 +99,7 @@ func loadProviderSchemas(schemas map[addrs.Provider]*ProviderSchema, config *con
 			return
 		}
 
+		log.Println("CUSTOM_LOG_CALLED! terraform/schemas.go")
 		log.Printf("[TRACE] LoadSchemas: retrieving schema for provider type %q", name)
 		provider, err := components.ResourceProvider(fqn)
 		if err != nil {
@@ -110,10 +111,15 @@ func loadProviderSchemas(schemas map[addrs.Provider]*ProviderSchema, config *con
 			)
 			return
 		}
+
+		log.Println("Providers from components.loadProviderSchemas():")
+		log.Println(provider)
+
 		defer func() {
 			provider.Close()
 		}()
 
+		log.Println("CUSTOM_LOG_SID: Calling GetProviderSchema!!!!!!")
 		resp := provider.GetProviderSchema()
 		if resp.Diagnostics.HasErrors() {
 			// We'll put a stub in the map so we won't re-attempt this on

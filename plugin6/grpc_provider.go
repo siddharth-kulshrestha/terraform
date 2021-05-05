@@ -2,6 +2,7 @@ package plugin6
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"sync"
 
@@ -441,6 +442,12 @@ func (p *GRPCProvider) PlanResourceChange(r providers.PlanResourceChangeRequest)
 
 func (p *GRPCProvider) ApplyResourceChange(r providers.ApplyResourceChangeRequest) (resp providers.ApplyResourceChangeResponse) {
 	logger.Trace("GRPCProvider.v6: ApplyResourceChange")
+
+	logger.Trace("CUSTOM_LOG_SID: Called ApplyResourceChange changes!!")
+
+	b, _ := json.Marshal(r)
+	logger.Trace("CUSTOM_LOG_SID: printing apply resource request....")
+	logger.Trace(string(b))
 
 	resSchema := p.getResourceSchema(r.TypeName)
 	metaSchema := p.getProviderMetaSchema()

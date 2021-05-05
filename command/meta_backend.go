@@ -76,6 +76,8 @@ type BackendOpts struct {
 func (m *Meta) Backend(opts *BackendOpts) (backend.Enhanced, tfdiags.Diagnostics) {
 	var diags tfdiags.Diagnostics
 
+	log.Println("CUSTOM_SID_LOGS: inside meta_backend/meta.Backend()")
+
 	// If no opts are set, then initialize
 	if opts == nil {
 		opts = &BackendOpts{}
@@ -85,6 +87,7 @@ func (m *Meta) Backend(opts *BackendOpts) (backend.Enhanced, tfdiags.Diagnostics
 	// local operation.
 	var b backend.Backend
 	if !opts.ForceLocal {
+		log.Println("CUSTOM_SID_LOGS: inside Forcelocal.......")
 		var backendDiags tfdiags.Diagnostics
 		b, backendDiags = m.backendFromConfig(opts)
 		diags = diags.Append(backendDiags)
@@ -145,6 +148,12 @@ func (m *Meta) Backend(opts *BackendOpts) (backend.Enhanced, tfdiags.Diagnostics
 		// Local backend isn't allowed to fail. It would be a bug.
 		panic(err)
 	}
+	log.Println("CUSTOM_LOG_SID: local backend in meta_backend.go::Backend(): ")
+	log.Println(local)
+	log.Println(local.Backend)
+
+	log.Println("CUSTOM_LOG_SID: local backend in meta_backend.go::Backend():: Value of ContextOpts: ")
+	log.Println(local.ContextOpts)
 
 	// If we got here from backendFromConfig returning nil then m.backendState
 	// won't be set, since that codepath considers that to be no backend at all,

@@ -189,6 +189,7 @@ func NewContext(opts *ContextOpts) (*Context, tfdiags.Diagnostics) {
 	}
 
 	log.Printf("[TRACE] terraform.NewContext: loading provider schemas")
+	log.Printf("CUSTOM_LOG_SID: Before LoadSchemas type of components: %v", components)
 	schemas, err := LoadSchemas(opts.Config, opts.State, components)
 	if err != nil {
 		diags = diags.Append(tfdiags.Sourceless(
@@ -578,6 +579,8 @@ func (c *Context) plan() (*plans.Plan, tfdiags.Diagnostics) {
 	if graphDiags.HasErrors() {
 		return nil, diags
 	}
+
+	log.Println("Here is the plan and graph creation !")
 
 	// Do the walk
 	walker, walkDiags := c.walk(graph, walkPlan)

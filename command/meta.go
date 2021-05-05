@@ -445,6 +445,7 @@ func (m *Meta) contextOpts() (*terraform.ContextOpts, error) {
 		opts.Providers = m.testingOverrides.Providers
 		opts.Provisioners = m.testingOverrides.Provisioners
 	} else {
+		log.Println("CUSTOM_LOG_SID: calling providerFactories() in meta.contextOpts()")
 		providerFactories, err := m.providerFactories()
 		if err != nil {
 			// providerFactories can fail if the plugin selections file is

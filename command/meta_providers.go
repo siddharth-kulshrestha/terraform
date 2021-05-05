@@ -225,6 +225,7 @@ func (m *Meta) providerDevOverrideRuntimeWarnings() tfdiags.Diagnostics {
 // the returned map may be incomplete or invalid, but will be as complete
 // as possible given the cause of the error.
 func (m *Meta) providerFactories() (map[addrs.Provider]providers.Factory, error) {
+	log.Println("CUSTOM_LOG_SID:: inside providerFactories()............")
 	locks, diags := m.lockedDependencies()
 	if diags.HasErrors() {
 		return nil, fmt.Errorf("failed to read dependency lock file: %s", diags.Err())
@@ -271,6 +272,8 @@ func (m *Meta) providerFactories() (map[addrs.Provider]providers.Factory, error)
 	for name, factory := range internalFactories {
 		factories[addrs.NewBuiltInProvider(name)] = factory
 	}
+	log.Println("CUSTOM_LOG_SID: in meta_providers.go::meta.providerFactories():: providerLocks::")
+	log.Println(providerLocks)
 	for provider, lock := range providerLocks {
 		reportError := func(thisErr error) {
 			err = multierror.Append(err, thisErr)
@@ -281,6 +284,9 @@ func (m *Meta) providerFactories() (map[addrs.Provider]providers.Factory, error)
 			factories[provider] = providerFactoryError(thisErr)
 		}
 
+		log.Println("CUSTOM_LOG_SID: in meta_providers.go::meta.providerFactories()::printing factories in loop::")
+		log.Println(provider)
+		log.Println(factories)
 		version := lock.Version()
 		cached := cacheDir.ProviderVersion(provider, version)
 		if cached == nil {
@@ -301,6 +307,8 @@ func (m *Meta) providerFactories() (map[addrs.Provider]providers.Factory, error)
 				))
 				continue
 			}
+			log.Println("CUSTOM_LOG_SID: cached package is_matched: ")
+			log.Println(matched)
 			if !matched {
 				reportError(fmt.Errorf(
 					"the cached package for %s %s (in %s) does not match any of the checksums recorded in the dependency lock file",
@@ -309,8 +317,13 @@ func (m *Meta) providerFactories() (map[addrs.Provider]providers.Factory, error)
 				continue
 			}
 		}
+		log.Println("CUSTOM_LOG_SID: in meta_providers.go::meta.providerFactories()::cached value at last of loop::")
+		log.Println(provider)
+		log.Println(cached)
 		factories[provider] = providerFactory(cached)
 	}
+	log.Println("CUSTOM_LOG_SID: in meta_providers.go::meta.providerFactories()::printing factories after loop::")
+	log.Println(factories)
 	for provider, localDir := range devOverrideProviders {
 		// It's likely that providers in this map will conflict with providers
 		// in providerLocks
@@ -337,11 +350,16 @@ func (m *Meta) internalProviders() map[string]providers.Factory {
 // file in the given cache package and uses go-plugin to implement
 // providers.Interface against it.
 func providerFactory(meta *providercache.CachedProvider) providers.Factory {
+	// This is the main method to load provider in memory
+	log.Println("CUSTOM_LOG_SID: inside meta_providers.go::providerFactory(CachedProvider)....")
 	return func() (providers.Interface, error) {
 		execFile, err := meta.ExecutableFile()
 		if err != nil {
 			return nil, err
 		}
+
+		log.Println("Command to run executable file: ")
+		log.Println(execFile)
 
 		config := &plugin.ClientConfig{
 			HandshakeConfig:  tfplugin.Handshake,

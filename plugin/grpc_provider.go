@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"sync"
 
@@ -163,6 +164,14 @@ func (p *GRPCProvider) GetProviderSchema() (resp providers.GetProviderSchemaResp
 
 	p.schemas = resp
 
+	b, err := json.Marshal(resp)
+	if err != nil {
+		logger.Trace("Error occured while converting to json: ")
+		logger.Trace(err.Error())
+	}
+	logger.Trace("JSON Provider schema: ")
+	logger.Trace(string(b))
+
 	return resp
 }
 
@@ -288,6 +297,10 @@ func (p *GRPCProvider) UpgradeResourceState(r providers.UpgradeResourceStateRequ
 
 func (p *GRPCProvider) ConfigureProvider(r providers.ConfigureProviderRequest) (resp providers.ConfigureProviderResponse) {
 	logger.Trace("GRPCProvider: ConfigureProvider")
+
+	logger.Trace("CUSTOM_LOG_SID:: inside configure provider.........request:: ")
+	logger.Trace(r.TerraformVersion)
+	logger.Trace(r.Config.GoString())
 
 	schema := p.getSchema()
 
@@ -443,6 +456,15 @@ func (p *GRPCProvider) PlanResourceChange(r providers.PlanResourceChangeRequest)
 
 func (p *GRPCProvider) ApplyResourceChange(r providers.ApplyResourceChangeRequest) (resp providers.ApplyResourceChangeResponse) {
 	logger.Trace("GRPCProvider: ApplyResourceChange")
+
+	logger.Trace("CUSTOM_LOG_SID: Called ApplyResourceChange changes!!")
+
+	b, _ := json.Marshal(r)
+	logger.Trace("CUSTOM_LOG_SID: printing apply resource request....")
+	logger.Trace(string(b))
+
+	logger.Trace("CUSTOM_LOG_SID: Printing value of PlannedPrivate.........")
+	logger.Trace(string(r.PlannedPrivate))
 
 	resSchema := p.getResourceSchema(r.TypeName)
 	metaSchema := p.getProviderMetaSchema()

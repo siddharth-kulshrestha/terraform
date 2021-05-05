@@ -178,6 +178,8 @@ func (n *NodeApplyableResourceInstance) managedResourceExecute(ctx EvalContext) 
 	var createBeforeDestroyEnabled bool
 	var deposedKey states.DeposedKey
 
+	log.Println("CUSTOM_LOG_SID: called managedResourceExecute()..............")
+
 	addr := n.ResourceInstanceAddr().Resource
 	_, providerSchema, err := getProvider(ctx, n.ResolvedProvider)
 	diags = diags.Append(err)

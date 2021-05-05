@@ -1,6 +1,7 @@
 package terraform
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -157,6 +158,7 @@ func (n *NodeAbstractResourceInstance) AttachResourceState(s *states.Resource) {
 // readDiff returns the planned change for a particular resource instance
 // object.
 func (n *NodeAbstractResourceInstance) readDiff(ctx EvalContext, providerSchema *ProviderSchema) (*plans.ResourceInstanceChange, error) {
+	log.Println("CUSTOM_LOG_SID: called readDiff().........")
 	changes := ctx.Changes()
 	addr := n.ResourceInstanceAddr()
 
@@ -1831,10 +1833,25 @@ func (n *NodeAbstractResourceInstance) apply(
 		state = &states.ResourceInstanceObject{}
 	}
 
+	log.Println("CUSTOM_LOG_SID: node_resource_abstract_instance.go::apply():: Apply command called!!")
 	provider, providerSchema, err := getProvider(ctx, n.ResolvedProvider)
 	if err != nil {
 		return nil, diags.Append(err)
 	}
+
+	log.Println("CUSTOM_LOG_SID: node_resource_abstract_instance.go::apply():: Value of params:")
+	log.Println(state)
+	b, _ := json.Marshal(state)
+	log.Println(string(b))
+	log.Println(change)
+	b, _ = json.Marshal(change)
+	log.Println(string(b))
+	log.Println(applyConfig)
+	b, _ = json.Marshal(applyConfig)
+	log.Println(string(b))
+	log.Println(createBeforeDestroy)
+	b, _ = json.Marshal(createBeforeDestroy)
+	log.Println(string(b))
 	schema, _ := providerSchema.SchemaForResourceType(n.Addr.Resource.Resource.Mode, n.Addr.Resource.Resource.Type)
 	if schema == nil {
 		// Should be caught during validation, so we don't bother with a pretty error here
@@ -1842,7 +1859,7 @@ func (n *NodeAbstractResourceInstance) apply(
 		return nil, diags
 	}
 
-	log.Printf("[INFO] Starting apply for %s", n.Addr)
+	log.Printf("[INFO] Haha Starting apply for %s", n.Addr)
 
 	configVal := cty.NullVal(cty.DynamicPseudoType)
 	if applyConfig != nil {
@@ -1897,15 +1914,36 @@ func (n *NodeAbstractResourceInstance) apply(
 		}
 		return newState, diags
 	}
-
-	resp := provider.ApplyResourceChange(providers.ApplyResourceChangeRequest{
+	req := providers.ApplyResourceChangeRequest{
 		TypeName:       n.Addr.Resource.Resource.Type,
 		PriorState:     unmarkedBefore,
 		Config:         unmarkedConfigVal,
 		PlannedState:   unmarkedAfter,
 		PlannedPrivate: change.Private,
 		ProviderMeta:   metaConfigVal,
-	})
+	}
+	b, _ = json.Marshal(req)
+	log.Println("CUSTOM_LOG_SID:: Value of request in node_resource_abstract_instance.go:: ApplyResourceChangeRequest::")
+	log.Println(string(b))
+	log.Println(string(req.PlannedPrivate))
+
+	log.Println("Friendly names: ")
+	log.Println(unmarkedBefore.Type().FriendlyName())
+	b, _ = unmarkedBefore.Type().MarshalJSON()
+	log.Println(unmarkedBefore.GoString())
+	log.Println(string(b))
+	log.Println(unmarkedAfter.Type().FriendlyName())
+	log.Println(unmarkedAfter.GoString())
+	b, _ = unmarkedAfter.Type().MarshalJSON()
+	log.Println(string(b))
+
+	log.Println("Config value:")
+	log.Println(unmarkedConfigVal.GoString())
+
+	log.Println("Provider Meta value:")
+	log.Println(unmarkedConfigVal.GoString())
+
+	resp := provider.ApplyResourceChange(req)
 	applyDiags := resp.Diagnostics
 	if applyConfig != nil {
 		applyDiags = applyDiags.InConfigBody(applyConfig.Config, n.Addr.String())

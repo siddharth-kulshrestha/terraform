@@ -99,6 +99,8 @@ func loadProviderSchemas(schemas map[addrs.Provider]*ProviderSchema, config *con
 			return
 		}
 
+		log.Println("CUSTOM_LOG_CALLED! terraform/internal/legacy/schemas.go")
+
 		log.Printf("[TRACE] LoadSchemas: retrieving schema for provider type %q", name)
 		provider, err := components.ResourceProvider(fqn)
 		if err != nil {
@@ -110,6 +112,7 @@ func loadProviderSchemas(schemas map[addrs.Provider]*ProviderSchema, config *con
 			)
 			return
 		}
+		log.Println("Here we are closing the plugin process!!!!")
 		defer func() {
 			provider.Close()
 		}()

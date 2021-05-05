@@ -1,6 +1,8 @@
 package plugin6
 
 import (
+	"log"
+
 	"github.com/hashicorp/go-plugin"
 	proto "github.com/hashicorp/terraform/internal/tfplugin6"
 )
@@ -40,6 +42,7 @@ type ServeOpts struct {
 // Serve serves a plugin. This function never returns and should be the final
 // function called in the main function of the plugin.
 func Serve(opts *ServeOpts) {
+	log.Println("CUSTOM_LOG_SID: Serve called!")
 	plugin.Serve(&plugin.ServeConfig{
 		HandshakeConfig:  Handshake,
 		VersionedPlugins: pluginSet(opts),

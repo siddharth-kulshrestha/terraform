@@ -32,6 +32,9 @@ func (b *Local) Context(op *backend.Operation) (*terraform.Context, statemgr.Ful
 func (b *Local) context(op *backend.Operation) (*terraform.Context, *configload.Snapshot, statemgr.Full, tfdiags.Diagnostics) {
 	var diags tfdiags.Diagnostics
 
+	log.Println("CUSTOM_LOG_SID: b.ContextOpts.Providers in context()")
+	log.Println(b.ContextOpts.Providers)
+
 	// Get the latest state.
 	log.Printf("[TRACE] backend/local: requesting state manager for workspace %q", op.Workspace)
 	s, err := b.StateMgr(op.Workspace)
@@ -64,6 +67,9 @@ func (b *Local) context(op *backend.Operation) (*terraform.Context, *configload.
 		opts = *v
 	}
 
+	log.Println("CUSTOM_LOG_SID: opts.Providers in context()")
+	log.Println(opts.Providers)
+
 	// Copy set options from the operation
 	opts.Destroy = op.Destroy
 	opts.Targets = op.Targets
@@ -94,6 +100,9 @@ func (b *Local) context(op *backend.Operation) (*terraform.Context, *configload.
 			stateMeta = &m
 		}
 		log.Printf("[TRACE] backend/local: building context from plan file")
+		log.Println("Opts in backend/local context: ")
+		log.Println(opts)
+		log.Println(opts.Providers)
 		tfCtx, configSnap, ctxDiags = b.contextFromPlanFile(op.PlanFile, opts, stateMeta)
 		if ctxDiags.HasErrors() {
 			return nil, nil, nil, ctxDiags
@@ -104,6 +113,9 @@ func (b *Local) context(op *backend.Operation) (*terraform.Context, *configload.
 		op.ConfigLoader.ImportSourcesFromSnapshot(configSnap)
 	} else {
 		log.Printf("[TRACE] backend/local: building context for current working directory")
+		log.Println("Opts in backend/local context: ")
+		log.Println(opts)
+		log.Println(opts.Providers)
 		tfCtx, configSnap, ctxDiags = b.contextDirect(op, opts)
 	}
 	diags = diags.Append(ctxDiags)
@@ -171,6 +183,10 @@ func (b *Local) contextDirect(op *backend.Operation, opts terraform.ContextOpts)
 	}
 	opts.Variables = variables
 
+	log.Println("terraform opts in contextDirect:")
+	log.Println(opts)
+	log.Println("providers in opts in contextDirect:")
+	log.Println(opts.Providers)
 	tfCtx, ctxDiags := terraform.NewContext(&opts)
 	diags = diags.Append(ctxDiags)
 	return tfCtx, configSnap, diags
