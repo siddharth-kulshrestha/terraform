@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform/addrs"
 	"github.com/hashicorp/terraform/configs"
 	"github.com/hashicorp/terraform/configs/configschema"
+	"github.com/hashicorp/terraform/configs/hcl2shim"
 	"github.com/hashicorp/terraform/plans"
 	"github.com/hashicorp/terraform/plans/objchange"
 	"github.com/hashicorp/terraform/providers"
@@ -1211,6 +1212,7 @@ func (n *NodeAbstractResourceInstance) readDataSource(ctx EvalContext, configVal
 	log.Println("Config: ")
 	log.Println(configVal.Type().FriendlyName())
 	log.Println(configVal.GoString())
+	log.Println(hcl2shim.ConfigValueFromHCL2(configVal))
 	log.Println("ProviderMeta: ")
 	log.Println(metaConfigVal.Type().FriendlyName())
 	log.Println(metaConfigVal.GoString())
@@ -1221,6 +1223,7 @@ func (n *NodeAbstractResourceInstance) readDataSource(ctx EvalContext, configVal
 	})
 	log.Println("Response from ReadDataSource: ")
 	log.Println(resp.State.GoString())
+	log.Println(hcl2shim.ConfigValueFromHCL2(resp.State))
 	diags = diags.Append(resp.Diagnostics.InConfigBody(config.Config, n.Addr.String()))
 	if diags.HasErrors() {
 		return newVal, diags
